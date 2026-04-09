@@ -7,7 +7,9 @@ authors = [
     { name = "Lucas Paes", email = "lucas.paes@motion.com" }
 ]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "sqlalchemy>=2.0.0"
+]
 
 [build-system]
 requires = ["uv_build>=0.9.26,<0.10.0"]
