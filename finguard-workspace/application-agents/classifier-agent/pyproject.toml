@@ -1,0 +1,11 @@
+[project]
+name = "classifier-agent"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "aiosqlite>=0.22.1",
+    "alembic>=1.18.4",
+    "fastapi[standard]>=0.135.3",
+    "pydantic-settings>=2.13.1",
+    "sqlalchemy>=2.0.49",
+]

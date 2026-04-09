@@ -1,0 +1,19 @@
+[project]
+name = "code-challenge"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Lucas Paes", email = "lucas.paes@motion.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "aiosqlite>=0.22.1",
+    "fastapi[standard]>=0.135.3",
+    "pydantic-settings>=2.13.1",
+    "sqlalchemy>=2.0.49",
+]
+
+[build-system]
+requires = ["uv_build>=0.9.26,<0.10.0"]
+build-backend = "uv_build"
