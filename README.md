@@ -37,7 +37,7 @@ This code challenge evaluates advanced Python skills using:
 
 ---
 
-## 2. Candidate Requirements
+## 2. Project Requirements
 *   **Python 3.13+**
 *   **[uv](https://github.com/astral-sh/uv)** for package management and workspaces.
 *   **[just](https://github.com/casey/just)** for task automation.
@@ -133,8 +133,8 @@ dev-port port:
 ## 5. The Challenge Tasks
 
 ### Task 1: Core Engine Implementation
-Implement a `classify_transaction(description: str) -> str` function in the `transaction-engine` package.
-*   **Rules:** 
+Implement a `classify_transaction(description: str) -> str` function in the `transaction-engine` package. It should use AI to resolve it, but your first implementation can be hardcoded core to implement your PoC in the first round of the interview.
+*   **Example:** 
     *   Contains "Starbucks" or "McDonalds" -> `Food`
     *   Contains "Netflix" or "Spotify" -> `Subscription`
     *   Contains "Amazon" or "Walmart" -> `Shopping`
@@ -181,7 +181,8 @@ Create a LangGraph-based classification workflow:
 
 ## 6. Validation Suite (The "Black Box" Tests)
 
-Provide these tests to the candidate. They will only pass if the architecture and logic are correct.
+These tests are available for you to use. They will only pass if the architecture and logic are correct.
+It would be nice to add more tests to cover extra cases and files if possible.
 
 ### `application-agents/classifier-agent/tests/test_classification.py`
 ```python
