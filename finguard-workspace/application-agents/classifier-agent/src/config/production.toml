@@ -1,0 +1,9 @@
+# Production configuration for the FinGuard classifier agent.
+# Override via FINGUARD_* environment variables in the deployment environment.
+
+database_url = "postgresql+asyncpg://finguard:finguard@localhost:5432/finguard"
+sync_database_url = "postgresql+psycopg://finguard:finguard@localhost:5432/finguard"
+checkpointer_backend = "sqlite"
+checkpointer_path = "/var/lib/finguard/checkpoints.db"
+llm_backend = "rules"
+http_timeout_seconds = 15.0

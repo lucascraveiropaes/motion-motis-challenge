@@ -8,3 +8,12 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Local SQLite databases & coverage artifacts
+*.db
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

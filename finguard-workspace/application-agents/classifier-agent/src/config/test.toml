@@ -1,0 +1,8 @@
+# Test configuration: use an in-memory SQLite DB and in-memory checkpointer.
+
+database_url = "sqlite+aiosqlite:///:memory:"
+sync_database_url = "sqlite:///:memory:"
+checkpointer_backend = "memory"
+checkpointer_path = ":memory:"
+llm_backend = "rules"
+http_timeout_seconds = 1.0

@@ -1,65 +1,38 @@
-from fastapi import FastAPI, HTTPException, Depends
-from pydantic import BaseModel, Field
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
-from typing import List
+"""FastAPI application entry point.
 
-# Import from the workspace package
-from transaction_engine.classifier import classify_transaction
-from .models import Base, TransactionRecord
+All long-lived resources (DB engine, LLM service, checkpointer) are exposed
+through ``Depends()`` factories in ``classifier_agent.resources``; this
+module is intentionally thin so tests can override any dependency via
+``app.dependency_overrides``.
+"""
 
-# Database setup
-DATABASE_URL = "sqlite:///./classifier.db"  # Using SQLite for simplicity in this example
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+from __future__ import annotations
 
-# Create tables if they don't exist
-Base.metadata.create_all(bind=engine)
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
-app = FastAPI()
+from fastapi import FastAPI
 
-# Dependency to get DB session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+from classifier_agent.controllers import agent_router, classify_router
+from classifier_agent.resources.database import init_models
 
-# Pydantic models for request/response
-class TransactionRequest(BaseModel):
-    descriptions: List[str] = Field(..., example=["Starbucks Coffee", "Netflix Monthly"])
 
-class TransactionResponseItem(BaseModel):
-    description: str
-    category: str
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    await init_models()
+    yield
 
-class TransactionResponse(BaseModel):
-    results: List[TransactionResponseItem]
 
-@app.post("/transactions/classify", response_model=TransactionResponse)
-async def classify_transactions_endpoint(
-    request: TransactionRequest,
-    db: Session = Depends(get_db)
-):
-    """
-    Classifies a list of transaction descriptions and stores them in the database.
-    """
-    results = []
-    for description in request.descriptions:
-        category = classify_transaction(description)
-        
-        # Persist to database
-        db_record = TransactionRecord(description=description, category=category)
-        db.add(db_record)
-        db.commit()
-        db.refresh(db_record)
-        
-        results.append(TransactionResponseItem(description=description, category=category))
-        
-    return TransactionResponse(results=results)
+app = FastAPI(title="FinGuard Classifier Agent", version="0.1.0", lifespan=lifespan)
+app.include_router(classify_router)
+app.include_router(agent_router)
+
 
 @app.get("/")
-async def read_root():
+async def read_root() -> dict[str, str]:
     return {"message": "Welcome to the FinGuard Classifier Agent!"}
 
+
+@app.get("/health")
+async def health() -> dict[str, str]:
+    return {"status": "ok"}

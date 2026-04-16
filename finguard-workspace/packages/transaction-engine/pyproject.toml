@@ -1,7 +1,7 @@
 [project]
 name = "transaction-engine"
 version = "0.1.0"
-description = "Add your description here"
+description = "Core transaction classification and sanitization logic."
 readme = "README.md"
 authors = [
     { name = "Lucas Paes", email = "lucas.paes@motion.com" }

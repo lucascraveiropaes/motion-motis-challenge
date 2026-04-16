@@ -1,0 +1,9 @@
+# Development configuration for the FinGuard classifier agent.
+# Used when FINGUARD_ENV is unset or equal to "development".
+
+database_url = "sqlite+aiosqlite:///./classifier.db"
+sync_database_url = "sqlite:///./classifier.db"
+checkpointer_backend = "memory"
+checkpointer_path = "./checkpoints.db"
+llm_backend = "rules"
+http_timeout_seconds = 10.0
