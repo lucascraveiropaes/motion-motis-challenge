@@ -2,16 +2,28 @@ set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
 
 # Sync all dependencies across the workspace
 install:
-    uv sync --all-packages
+    uv sync --all-packages --group dev
 
-# Format and Lint
+# Format and lint (Ruff)
 lint:
     uv run ruff check .
-    uv run ruff format .
+    uv run ruff format . --check
 
-# Run all tests with coverage
+# Type checking with mypy
+typecheck:
+    uv run mypy .
+
+# Run tests with coverage
 test:
-    uv run pytest --cov
+    uv run pytest application-agents/classifier-agent -vv --cov=classifier_agent --cov=transaction_engine
+
+# Start the classifier agent in development mode
+dev:
+    uv run fastapi dev application-agents/classifier-agent/src/classifier_agent/app.py --port 8080
+
+# Start with a custom port
+dev-port port:
+    uv run fastapi dev application-agents/classifier-agent/src/classifier_agent/app.py --port {{port}}
 
 # Helper to create a new shared package
 new-package name:

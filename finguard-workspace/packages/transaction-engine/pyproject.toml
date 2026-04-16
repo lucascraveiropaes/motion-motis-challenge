@@ -7,7 +7,10 @@ authors = [
     { name = "Lucas Paes", email = "lucas.paes@motion.com" }
 ]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "openai>=2.32.0",
+    "python-dotenv>=1.2.2",
+]
 
 [build-system]
 requires = ["uv_build>=0.9.26,<0.10.0"]
