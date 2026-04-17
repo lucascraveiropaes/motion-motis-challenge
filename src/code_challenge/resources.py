@@ -5,6 +5,10 @@ from __future__ import annotations
 from collections.abc import Generator
 from dataclasses import dataclass
 from functools import lru_cache
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .services import ClassificationService
 
 
 @dataclass(frozen=True, slots=True)
@@ -41,3 +45,10 @@ def get_db_session_factory() -> Generator[None, None, None]:
     e fechar a conexao no bloco finally.
     """
     yield None
+
+
+def get_classification_service() -> ClassificationService:
+    """Provider de servico para facilitar overrides em testes."""
+    from .services import ClassificationService
+
+    return ClassificationService(audit_store=audit_store_factory())
