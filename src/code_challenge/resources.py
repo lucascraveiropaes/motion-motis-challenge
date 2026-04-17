@@ -1,4 +1,4 @@
-"""Dependencias e recursos injetaveis da API."""
+"""Injectable API dependencies and resources."""
 
 from __future__ import annotations
 
@@ -13,14 +13,14 @@ if TYPE_CHECKING:
 
 @dataclass(frozen=True, slots=True)
 class AuditRecord:
-    """Registro de auditoria para classificacoes realizadas."""
+    """Audit record for completed classifications."""
 
     description: str
     category: str
 
 
 class InMemoryAuditStore:
-    """Armazena auditoria em memoria para PoC e testes."""
+    """In-memory audit storage for PoC and tests."""
 
     def __init__(self) -> None:
         self._records: list[AuditRecord] = []
@@ -34,21 +34,21 @@ class InMemoryAuditStore:
 
 @lru_cache(maxsize=1)
 def audit_store_factory() -> InMemoryAuditStore:
-    """Retorna store singleton para facilitar override em testes."""
+    """Return singleton store to ease overriding in tests."""
     return InMemoryAuditStore()
 
 
 def get_db_session_factory() -> Generator[None, None, None]:
-    """Placeholder de sessao de banco via DI.
+    """Database session placeholder via DI.
 
-    Em producao, este provider deve abrir sessao SQLAlchemy, realizar yield
-    e fechar a conexao no bloco finally.
+    In production, this provider should open a SQLAlchemy session, yield,
+    and close the connection in a finally block.
     """
     yield None
 
 
 def get_classification_service() -> ClassificationService:
-    """Provider de servico para facilitar overrides em testes."""
+    """Service provider to ease overriding in tests."""
     from .services import ClassificationService
 
     return ClassificationService(audit_store=audit_store_factory())

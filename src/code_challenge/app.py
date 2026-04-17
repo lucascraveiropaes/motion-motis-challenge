@@ -1,4 +1,4 @@
-"""Composition root da aplicacao FastAPI."""
+"""FastAPI application composition root."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from .api import router
 
 
 def create_app() -> FastAPI:
-    """Cria app e registra as rotas da API."""
+    """Create the app and register API routes."""
     app = FastAPI(title="Code Challenge API", version="0.1.0")
     app.include_router(router)
     return app

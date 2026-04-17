@@ -1,4 +1,4 @@
-"""Schemas da API de classificacao."""
+"""Classification API schemas."""
 
 from __future__ import annotations
 
@@ -6,26 +6,26 @@ from pydantic import BaseModel, Field
 
 
 class TransactionRequest(BaseModel):
-    """Entrada para classificacao em lote."""
+    """Batch classification input."""
 
     descriptions: list[str] = Field(min_length=1)
 
 
 class ClassifiedTransactionResponse(BaseModel):
-    """Item classificado retornado pela API."""
+    """Classified item returned by the API."""
 
     description: str
     category: str
 
 
 class TransactionResponse(BaseModel):
-    """Resposta da classificacao em lote."""
+    """Batch classification response."""
 
     results: list[ClassifiedTransactionResponse]
 
 
 class StreamTransactionRequest(BaseModel):
-    """Entrada do endpoint de stream."""
+    """Stream endpoint input."""
 
     description: str = Field(min_length=1)
     thread_id: str = Field(min_length=1)

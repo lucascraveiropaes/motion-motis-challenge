@@ -1,4 +1,4 @@
-"""Regras de classificação de transações."""
+"""Transaction classification rules."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ DEFAULT_CATEGORY = "Uncategorized"
 
 
 def classify_transaction(description: str, categories_order: Iterable[str] | None = None) -> str:
-    """Classifica uma descrição de transação em uma categoria conhecida."""
+    """Classify a transaction description into a known category."""
     normalized_description = description.strip().lower()
     if not normalized_description:
         return DEFAULT_CATEGORY

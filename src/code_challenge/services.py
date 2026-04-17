@@ -1,4 +1,4 @@
-"""Servicos de negocio da classificacao."""
+"""Classification business services."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from .resources import AuditRecord, InMemoryAuditStore
 
 @dataclass(slots=True)
 class ClassificationService:
-    """Orquestra classificacao e persistencia de auditoria."""
+    """Orchestrates classification and audit persistence."""
 
     audit_store: InMemoryAuditStore
 

@@ -1,4 +1,4 @@
-"""Execucao de classificacao via grafo simples."""
+"""Classification execution via a simple graph."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from .classifier import classify_transaction
 
 @dataclass(frozen=True, slots=True)
 class ClassifiedTransaction:
-    """Representa uma transacao classificada durante o fluxo."""
+    """Represents a classified transaction during the flow."""
 
     description: str
     category: str
@@ -17,7 +17,7 @@ class ClassifiedTransaction:
 
 @dataclass(frozen=True, slots=True)
 class GraphExecutionResult:
-    """Resultado consolidado da execucao do grafo."""
+    """Consolidated result of graph execution."""
 
     ordered_nodes: tuple[str, ...]
     edges: tuple[tuple[str, str], ...]
@@ -26,7 +26,7 @@ class GraphExecutionResult:
 
 @dataclass(slots=True)
 class TransactionGraph:
-    """Grafo direcionado para orquestrar o pipeline de classificacao."""
+    """Directed graph to orchestrate the classification pipeline."""
 
     _adjacency: dict[str, list[str]] = field(default_factory=dict)
     _ordered_nodes: list[str] = field(default_factory=list)
@@ -44,21 +44,17 @@ class TransactionGraph:
             self._adjacency[source].append(target)
 
     def edges(self) -> tuple[tuple[str, str], ...]:
-        return tuple(
-            (source, target)
-            for source, targets in self._adjacency.items()
-            for target in targets
-        )
+        return tuple((source, target) for source, targets in self._adjacency.items() for target in targets)
 
     def ordered_nodes(self) -> tuple[str, ...]:
         return tuple(self._ordered_nodes)
 
 
 def execute_classification_graph(descriptions: list[str]) -> GraphExecutionResult:
-    """Executa o fluxo de classificacao e retorna o resultado do grafo.
+    """Run the classification flow and return the graph result.
 
-    Nota: a persistencia em banco ainda nao esta conectada. Em producao,
-    aqui receberiamos uma sessao injetada por DI para salvar auditoria.
+    Note: database persistence is not wired up yet. In production,
+    a DI-injected session would be passed here to persist audit data.
     """
     graph = TransactionGraph()
     graph.add_node("input")

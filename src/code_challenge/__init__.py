@@ -1,4 +1,4 @@
-"""Pacote principal do desafio de classificação."""
+"""Main package for the classification challenge."""
 
 from .classifier import classify_transaction
 from .graph import GraphExecutionResult, TransactionGraph, execute_classification_graph

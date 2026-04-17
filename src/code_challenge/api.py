@@ -1,4 +1,4 @@
-"""Rotas HTTP da aplicacao."""
+"""HTTP application routes."""
 
 from __future__ import annotations
 
