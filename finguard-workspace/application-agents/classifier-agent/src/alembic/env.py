@@ -1,22 +1,20 @@
-import sys
 import os
+import sys
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
 from alembic import context
+from classifier_agent.models import Base
+from sqlalchemy import engine_from_config, pool
 
 # Add the application source directory to the Python path
 # This is necessary for Alembic to find the 'classifier_agent' module
 # We are looking for src/alembic, so we go up two levels to the agent's root
 # and then insert the src directory.
-app_src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+app_src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if app_src_path not in sys.path:
     sys.path.insert(0, app_src_path)
 
 # Import models from our application
-from classifier_agent.models import Base, TransactionRecord
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -77,9 +75,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

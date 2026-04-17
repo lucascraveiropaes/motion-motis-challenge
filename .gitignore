@@ -11,3 +11,7 @@ wheels/
 
 # Custom
 /docs/challenges
+
+.github/
+.vscode/
+*.db

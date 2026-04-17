@@ -1,13 +1,17 @@
-from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-from datetime import datetime
+from datetime import UTC, datetime
 
-Base = declarative_base()
+from sqlalchemy import DateTime, String
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+
+class Base(DeclarativeBase):
+    pass
+
 
 class TransactionRecord(Base):
     __tablename__ = "transaction_records"
 
-    id = Column(Integer, primary_key=True, index=True)
-    description = Column(String, nullable=False)
-    category = Column(String, nullable=False)
-    processed_at = Column(DateTime, default=datetime.utcnow)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    description: Mapped[str] = mapped_column(String, nullable=False)
+    category: Mapped[str] = mapped_column(String, nullable=False)
+    processed_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))

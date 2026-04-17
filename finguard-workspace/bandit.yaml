@@ -1,0 +1,2 @@
+exclude_dirs:
+  - application-agents/classifier-agent/tests

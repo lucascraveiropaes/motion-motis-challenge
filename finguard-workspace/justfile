@@ -22,3 +22,10 @@ new-package name:
 new-agent name:
     mkdir -p application-agents/{{name}}
     cd application-agents/{{name}} && uv init --app
+
+dev:
+    uv run fastapi dev application-agents/classifier-agent/src/classifier_agent/app.py --port 8080
+
+# Run with custom port
+dev-port port:
+    uv run fastapi dev application-agents/classifier-agent/src/classifier_agent/app.py --port {{port}}

@@ -288,3 +288,75 @@ async def test_graph_context():
 * Implement a checkpointer factory that supports SQLite, Postgres, and in-memory backends
 * Configure LangGraph to persist conversation state across requests using `thread_id`
 * Add ability to resume conversations from saved state
+
+----- 
+
+## Decisions and Evidences
+
+### Decision 1: Keep the PoC Simple and Aligned with the Requested Interface
+
+For the first PoC round, the classifier keeps the required public interface:
+
+- `classify_transaction(description: str) -> str`
+- Category values are returned as simple strings (for example: `Food`, `Subscription`, `Shopping`, `Uncategorized`)
+
+Rationale:
+
+- The challenge explicitly allows a first hardcoded/PoC implementation.
+- Keeping string outputs reduces complexity and avoids introducing additional mapping layers before they are needed.
+- This keeps compatibility with API responses and tests that assert string categories.
+
+### Decision 2: Avoid Introducing a New Output Data Structure in the Engine
+
+In this PoC, the engine does not return a custom object/dataclass for category output.
+
+Rationale:
+
+- A richer structure would add conversion code in the agent and persistence paths without functional benefit for the requested tests.
+- The current design keeps the core classification logic focused and easy to evolve later.
+- The implementation can still be upgraded to a richer internal model in future iterations while preserving the same public function signature.
+### Evidences:
+
+- Some evidence prints are on [docs/evidences](docs/evidences), but here are some key evidences for the decisions
+
+## 9. TODO (Production Hardening)
+
+This PoC focuses on architecture and challenge requirements. Before production use, implement the following:
+
+### Security
+- Add input validation hardening and payload size limits for all endpoints.
+- Add rate limiting and abuse protection for classify and stream routes.
+- Enforce secure secrets management (no plaintext secrets in files).
+- Enable dependency and image vulnerability scanning in CI.
+- Add security headers and strict CORS configuration by environment.
+
+### Authentication and Authorization
+- Add authentication for all non-public endpoints (for example JWT/OAuth2).
+- Add authorization policies (role/scope based) per route.
+- Add tenant/user ownership checks for thread and job resources.
+- Add token/session expiration and refresh strategy.
+
+### Logging
+- Implement structured JSON logging with correlation/request IDs.
+- Redact sensitive fields from request and response logs.
+- Standardize log levels and log event schema across services.
+- Add audit logging for classification requests and admin actions.
+
+### Observability
+- Add metrics (latency, throughput, error rate, queue/job duration).
+- Add distributed tracing for API, graph nodes, and DB calls.
+- Add health/readiness endpoints and dependency checks.
+- Define SLOs/SLIs and alerting rules for critical paths.
+
+### Reliability and Operations
+- Add retry/backoff and timeout policies for external calls.
+- Add idempotency strategy for async job creation endpoints.
+- Add migration strategy/versioning checks for DB schema changes.
+- Add backup and restore strategy for persisted checkpoint data.
+
+### Compliance and Governance
+- Add data retention policy for transaction and checkpoint records.
+- Define PII classification and masking requirements.
+- Add access audit trails and least-privilege service credentials.
+
+
