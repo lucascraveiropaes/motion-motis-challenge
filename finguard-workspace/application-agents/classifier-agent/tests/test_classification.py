@@ -4,23 +4,52 @@ from httpx import AsyncClient
 
 @pytest.mark.asyncio
 async def test_classification_flow(client: AsyncClient):
-    """Verify that the API correctly classifies a known description."""
+    """
+    Verify the async batch flow (Stretch Goal 1):
+    POST returns 202 + job_id, GET /job_id returns completed results.
+    """
     payload = {"descriptions": ["Starbucks Coffee", "Netflix Monthly"]}
-    response = await client.post("/transactions/classify", json=payload)
 
-    assert response.status_code == 200
-    results = response.json()["results"]
+    # 1. Enqueue the job
+    response = await client.post("/transactions/classify", json=payload)
+    assert response.status_code == 202
+    data = response.json()
+    assert "job_id" in data
+    job_id = data["job_id"]
+
+    # 2. Poll for results (background task completes synchronously in ASGI tests)
+    result_response = await client.get(f"/transactions/classify/{job_id}")
+    assert result_response.status_code == 200
+    result_data = result_response.json()
+    assert result_data["status"] == "completed"
+    results = result_data["results"]
     assert results[0]["category"] == "Food"
     assert results[1]["category"] == "Subscription"
 
 
 @pytest.mark.asyncio
+async def test_classify_job_not_found(client: AsyncClient):
+    """Polling a non-existent job_id returns 404."""
+    response = await client.get("/transactions/classify/non-existent-job-id")
+    assert response.status_code == 404
+
+
+@pytest.mark.asyncio
 async def test_persistence(client: AsyncClient, db_session):
-    """Verify that classified transactions are saved to the database."""
+    """
+    Verify that classified transactions are saved to the database
+    after the background job completes.
+    """
     from classifier_agent.models import TransactionRecord
     from sqlalchemy import select
 
-    await client.post("/transactions/classify", json={"descriptions": ["Walmart Store"]})
+    response = await client.post("/transactions/classify", json={"descriptions": ["Walmart Store"]})
+    assert response.status_code == 202
+    job_id = response.json()["job_id"]
+
+    # Poll until completed (in ASGI tests the background task runs synchronously)
+    result_response = await client.get(f"/transactions/classify/{job_id}")
+    assert result_response.json()["status"] == "completed"
 
     result = await db_session.execute(select(TransactionRecord))
     record = result.scalars().first()
@@ -42,7 +71,6 @@ async def test_stream_endpoint(client: AsyncClient):
             if chunk.startswith("data: "):
                 chunks.append(chunk[6:])
 
-        # Should have at least one message + done
         assert len(chunks) >= 2
         import json
 
@@ -58,12 +86,9 @@ async def test_dependency_injection():
     from classifier_agent.app import app
     from classifier_agent.resources import checkpointer_factory, http_client_factory, llm_service_factory
 
-    # Verify factories are callable
     assert callable(llm_service_factory)
     assert callable(http_client_factory)
     assert callable(checkpointer_factory)
-
-    # Verify app has dependency overrides setup
     assert hasattr(app, "dependency_overrides")
 
 
@@ -72,7 +97,6 @@ async def test_graph_context():
     """Verify that GraphContext is properly defined."""
     from classifier_agent.graph.types import GraphContext
 
-    # Should have the required service attributes
     assert hasattr(GraphContext, "__dataclass_fields__")
     fields = GraphContext.__dataclass_fields__
     assert "llm_service" in fields

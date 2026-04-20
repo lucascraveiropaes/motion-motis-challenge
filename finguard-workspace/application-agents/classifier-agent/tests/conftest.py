@@ -1,3 +1,4 @@
+import classifier_agent.resources.database as db_module
 import pytest_asyncio
 from classifier_agent.app import app
 from classifier_agent.models import Base
@@ -8,14 +9,14 @@ from langgraph.checkpoint.memory import MemorySaver
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 # Create a test database in memory
-# Note: SQLite memory databases with async drivers need to share cache, or use a temp file.
-# For simplicity and isolation, we use a shared memory uri.
 TEST_DATABASE_URL = "sqlite+aiosqlite:///file:testdb?mode=memory&cache=shared&uri=true"
 test_engine = create_async_engine(TEST_DATABASE_URL)
 TestingSessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=test_engine, class_=AsyncSession)
 
+# --- Patch the module-level SessionLocal so background tasks also use the test DB ---
+db_module.SessionLocal = TestingSessionLocal
 
-# We will use dependency injection to provide the test session
+
 async def override_get_db():
     db = TestingSessionLocal()
     try:
@@ -25,19 +26,18 @@ async def override_get_db():
 
 
 async def override_checkpointer():
-    """Override the checkpointer with an in-memory saver to avoid SQLite file handles in tests."""
+    """Use in-memory saver for tests — avoids SQLite file handles."""
     yield MemorySaver()
 
 
-# Override the dependencies in the app
+# Apply dependency overrides
 app.dependency_overrides[get_db_session_factory] = override_get_db
 app.dependency_overrides[checkpointer_factory] = override_checkpointer
 
 
 @pytest_asyncio.fixture(scope="function", autouse=True)
 async def setup_database():
-    """Create and drop tables for each test."""
-    # We must use run_sync to execute synchronous metadata commands
+    """Create and drop all tables (including ClassificationJob) for each test."""
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield

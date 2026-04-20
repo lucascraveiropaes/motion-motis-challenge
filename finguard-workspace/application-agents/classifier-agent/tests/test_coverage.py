@@ -59,3 +59,37 @@ async def test_checkpointer_factory_sqlite_disk(monkeypatch, tmp_path):
         await anext(gen)
     except StopAsyncIteration:
         pass
+
+
+@pytest.mark.asyncio
+async def test_background_job_completed_results(client: AsyncClient):
+    """Cover the results-parsing branch of GET /transactions/classify/{job_id}."""
+    response = await client.post("/transactions/classify", json={"descriptions": ["Amazon Store"]})
+    assert response.status_code == 202
+    job_id = response.json()["job_id"]
+
+    result = await client.get(f"/transactions/classify/{job_id}")
+    assert result.status_code == 200
+    data = result.json()
+    assert data["status"] == "completed"
+    assert data["results"][0]["category"] == "Shopping"
+
+
+@pytest.mark.asyncio
+async def test_process_job_invalid_id():
+    """Cover the early-return guard inside _process_classification_job."""
+    from classifier_agent.app import _process_classification_job
+
+    # Should return silently without raising when job_id does not exist
+    await _process_classification_job("non-existent-uuid", ["Starbucks"])
+
+
+@pytest.mark.asyncio
+async def test_classify_endpoint_returns_202(client: AsyncClient):
+    """Cover the full classify endpoint + refresh path."""
+    response = await client.post("/transactions/classify", json={"descriptions": ["Netflix Monthly"]})
+    assert response.status_code == 202
+    body = response.json()
+    assert body["status"] == "pending"
+    assert "job_id" in body
+    assert "message" in body
