@@ -17,10 +17,12 @@ async def test_classification_flow(client: AsyncClient):
 @pytest.mark.asyncio
 async def test_persistence(client: AsyncClient, db_session):
     """Verify that classified transactions are saved to the database."""
+    from sqlalchemy import select
     from classifier_agent.models import TransactionRecord
-
+    
     await client.post("/transactions/classify", json={"descriptions": ["Walmart Store"]})
-
-    record = db_session.query(TransactionRecord).first()
+    
+    result = await db_session.execute(select(TransactionRecord))
+    record = result.scalars().first()
     assert record is not None
     assert record.category == "Shopping"

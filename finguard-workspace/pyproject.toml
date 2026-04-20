@@ -2,7 +2,9 @@
 name = "finguard-workspace"
 version = "0.1.0"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "greenlet>=3.4.0",
+]
 
 [tool.uv.workspace]
 members = ["application-agents/*", "packages/*"]

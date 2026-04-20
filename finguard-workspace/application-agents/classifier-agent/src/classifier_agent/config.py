@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, TomlConf
 
 
 class Settings(BaseSettings):
-    database_url: str = "sqlite:///./classifier.db"
+    database_url: str = "sqlite+aiosqlite:///./classifier.db"
 
     @classmethod
     def settings_customise_sources(
@@ -13,8 +13,7 @@ class Settings(BaseSettings):
         settings_cls: Type[BaseSettings],
         init_settings: PydanticBaseSettingsSource,
         env_settings: PydanticBaseSettingsSource,
-        _dotenv_settings: PydanticBaseSettingsSource,
-        _file_secret_settings: PydanticBaseSettingsSource,
+        **kwargs
     ) -> Tuple[PydanticBaseSettingsSource, ...]:
         # Define the TOML configuration file
         toml_source = TomlConfigSettingsSource(settings_cls, toml_file=os.getenv("CONFIG_FILE", "config.toml"))
