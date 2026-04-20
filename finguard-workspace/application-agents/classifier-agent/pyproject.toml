@@ -11,5 +11,15 @@ dependencies = [
     "transaction-engine",
 ]
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [tool.uv.sources]
 transaction-engine = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/classifier_agent"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "../../packages/transaction-engine/src"]

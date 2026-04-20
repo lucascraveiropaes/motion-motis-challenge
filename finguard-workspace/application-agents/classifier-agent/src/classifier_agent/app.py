@@ -22,7 +22,7 @@ app = FastAPI()
 
 
 # Dependency to get DB session
-def get_db():
+def get_db_session_factory():
     db = SessionLocal()
     try:
         yield db
@@ -45,7 +45,7 @@ class TransactionResponse(BaseModel):
 
 
 @app.post("/transactions/classify", response_model=TransactionResponse)
-async def classify_transactions_endpoint(request: TransactionRequest, db: Session = Depends(get_db)):
+async def classify_transactions_endpoint(request: TransactionRequest, db: Session = Depends(get_db_session_factory)):
     """
     Classifies a list of transaction descriptions and stores them in the database.
     """

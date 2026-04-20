@@ -78,7 +78,7 @@ wheels = [
 [[package]]
 name = "classifier-agent"
 version = "0.1.0"
-source = { virtual = "application-agents/classifier-agent" }
+source = { editable = "application-agents/classifier-agent" }
 dependencies = [
     { name = "aiosqlite" },
     { name = "alembic" },
