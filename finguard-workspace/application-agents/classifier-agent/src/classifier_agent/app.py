@@ -75,7 +75,7 @@ import json
 
 from fastapi.responses import StreamingResponse
 
-from classifier_agent.resources.services import get_http_client, get_llm_service
+from classifier_agent.resources.services import http_client_factory, llm_service_factory
 
 
 async def event_stream_generator(request: StreamRequest, db: AsyncSession, _llm, _http):
@@ -106,8 +106,8 @@ async def event_stream_generator(request: StreamRequest, db: AsyncSession, _llm,
 async def stream_transactions_endpoint(
     request: StreamRequest,
     db: AsyncSession = Depends(get_db_session_factory),
-    llm=Depends(get_llm_service),
-    http=Depends(get_http_client),
+    llm=Depends(llm_service_factory),
+    http=Depends(http_client_factory),
 ):
     """
     Stream Server-Sent Events (SSE) representing the progress of a transaction classification.

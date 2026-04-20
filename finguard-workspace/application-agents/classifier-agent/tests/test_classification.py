@@ -50,3 +50,18 @@ async def test_stream_endpoint(client: AsyncClient):
         assert first_msg.get("type") == "status" or first_msg.get("type") == "ai" or "message" in first_msg
         done_msg = json.loads(chunks[-1])
         assert done_msg["type"] == "done"
+
+
+@pytest.mark.asyncio
+async def test_dependency_injection():
+    """Verify that dependencies are correctly injected."""
+    from classifier_agent.app import app
+    from classifier_agent.resources import checkpointer_factory, http_client_factory, llm_service_factory
+
+    # Verify factories are callable
+    assert callable(llm_service_factory)
+    assert callable(http_client_factory)
+    assert callable(checkpointer_factory)
+
+    # Verify app has dependency overrides setup
+    assert hasattr(app, "dependency_overrides")

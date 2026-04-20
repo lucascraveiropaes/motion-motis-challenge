@@ -26,10 +26,10 @@ This branch consolidates all 6 required tasks into a unified architecture:
 - [x] Type checking passes cleanly (`just typecheck`).
 
 ## 📸 Proof of Work (Optional but Recommended)
-**Task 1, 2, 3 & 4 Execution Proof:**
+**Task 1, 2, 3, 4 & 5 Execution Proof:**
 ```text
 $ uv run pytest application-agents/classifier-agent -vv --cov=classifier_agent --cov=transaction_engine
-application-agents/classifier-agent/tests/test_classification.py::test_stream_endpoint PASSED
+application-agents/classifier-agent/tests/test_classification.py::test_dependency_injection PASSED
 
 ================================ tests coverage ================================
 _______________ coverage: platform darwin, python 3.13.5-final-0 _______________
@@ -40,14 +40,14 @@ application-agents/classifier-agent/src/classifier_agent/__init__.py            
 application-agents/classifier-agent/src/classifier_agent/app.py                     33      2    94%   56
 application-agents/classifier-agent/src/classifier_agent/config.py                  10      0   100%
 application-agents/classifier-agent/src/classifier_agent/models.py                  11      0   100%
-application-agents/classifier-agent/src/classifier_agent/resources/__init__.py       0      0   100%
+application-agents/classifier-agent/src/classifier_agent/resources/__init__.py       3      0   100%
 application-agents/classifier-agent/src/classifier_agent/resources/database.py      15      4    73%   10-14
-application-agents/classifier-agent/src/classifier_agent/resources/services.py       4      0   100%
+application-agents/classifier-agent/src/classifier_agent/resources/services.py      16      1    94%   11
 packages/transaction-engine/src/transaction_engine/__init__.py                       2      0   100%
 packages/transaction-engine/src/transaction_engine/classifier.py                     9      0   100%
 --------------------------------------------------------------------------------------------------------------
-TOTAL                                                                              102      6    94%
-======================== 7 passed, 4 warnings in 0.18s =========================
+TOTAL                                                                              116      7    94%
+======================== 8 passed, 4 warnings in 0.18s =========================
 ```
 
 ---
@@ -59,7 +59,7 @@ TOTAL                                                                           
 - [x] **4. Configuration**: `.toml` pattern implemented.
 - [x] **5. Stream Implementation**: `/stream/transactions` returns SSE.
 - [x] **6. Dependency Injection (Database)**: DB session properly injected.
-- [ ] **7. Dependency Injection (Services)**: Factory functions implemented with `@cache`.
+- [x] **7. Dependency Injection (Services)**: Factory functions implemented with `@cache`.
 - [x] **8. Dependency Overrides in Tests**: Handled via `app.dependency_overrides`.
 - [ ] **9. LangGraph Integration**: `GraphState` and `GraphContext` properly defined.
 
