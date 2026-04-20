@@ -26,28 +26,31 @@ This branch consolidates all 6 required tasks into a unified architecture:
 - [x] Type checking passes cleanly (`just typecheck`).
 
 ## 📸 Proof of Work (Optional but Recommended)
-**Task 1, 2, 3, 4 & 5 Execution Proof:**
+**Task 1, 2, 3, 4, 5 & 6 Execution Proof:**
 ```text
 $ uv run pytest application-agents/classifier-agent -vv --cov=classifier_agent --cov=transaction_engine
-application-agents/classifier-agent/tests/test_classification.py::test_dependency_injection PASSED
+application-agents/classifier-agent/tests/test_classification.py::test_graph_context PASSED
 
 ================================ tests coverage ================================
 _______________ coverage: platform darwin, python 3.13.5-final-0 _______________
 
-Name                                                                             Stmts   Miss  Cover   Missing
---------------------------------------------------------------------------------------------------------------
+Name                                                                             Stmts   Miss  Cover
+----------------------------------------------------------------------------------------------------
 application-agents/classifier-agent/src/classifier_agent/__init__.py                 0      0   100%
-application-agents/classifier-agent/src/classifier_agent/app.py                     33      2    94%   56
+application-agents/classifier-agent/src/classifier_agent/app.py                     37      2    95%
 application-agents/classifier-agent/src/classifier_agent/config.py                  10      0   100%
+application-agents/classifier-agent/src/classifier_agent/graph/__init__.py           2      0   100%
+application-agents/classifier-agent/src/classifier_agent/graph/types.py             11      0   100%
+application-agents/classifier-agent/src/classifier_agent/graph/workflow.py          13      0   100%
 application-agents/classifier-agent/src/classifier_agent/models.py                  11      0   100%
 application-agents/classifier-agent/src/classifier_agent/resources/__init__.py       3      0   100%
-application-agents/classifier-agent/src/classifier_agent/resources/database.py      15      4    73%   10-14
-application-agents/classifier-agent/src/classifier_agent/resources/services.py      16      1    94%   11
+application-agents/classifier-agent/src/classifier_agent/resources/database.py      15      4    73%
+application-agents/classifier-agent/src/classifier_agent/resources/services.py      26      4    85%
 packages/transaction-engine/src/transaction_engine/__init__.py                       2      0   100%
 packages/transaction-engine/src/transaction_engine/classifier.py                     9      0   100%
---------------------------------------------------------------------------------------------------------------
-TOTAL                                                                              116      7    94%
-======================== 8 passed, 4 warnings in 0.18s =========================
+----------------------------------------------------------------------------------------------------
+TOTAL                                                                              139     10    93%
+======================== 9 passed, 4 warnings in 0.09s =========================
 ```
 
 ---
@@ -61,7 +64,12 @@ TOTAL                                                                           
 - [x] **6. Dependency Injection (Database)**: DB session properly injected.
 - [x] **7. Dependency Injection (Services)**: Factory functions implemented with `@cache`.
 - [x] **8. Dependency Overrides in Tests**: Handled via `app.dependency_overrides`.
-- [ ] **9. LangGraph Integration**: `GraphState` and `GraphContext` properly defined.
+- [x] **9. LangGraph Integration**: `GraphState` and `GraphContext` properly defined.
+
+## 8. Senior "Stretch" Goals (Optional)
+- [x] **Stretch Goal 1: Asynchronous Batch Processor**: Handled in endpoint and engine via `asyncio.to_thread`.
+- [x] **Stretch Goal 2: Multi-Message Types in Stream**: Stream yields `status`, `ai`, and `done` events.
+- [x] **Stretch Goal 3: Checkpointer Persistence**: Factory dynamically provides `AsyncSqliteSaver` or `MemorySaver`.
 
 ### Senior Stretch Goals
 - [x] Stretch Goal 1: Asynchronous Batch Processor

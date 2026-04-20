@@ -13,10 +13,11 @@ class HttpClient:
     pass
 
 
-class Checkpointer:
-    """Mock Checkpointer class for LangGraph persistence (Stretch Goal 3)."""
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 
-    pass
+# If postgres were added, it would be AsyncPostgresSaver from langgraph-checkpoint-postgres
+from classifier_agent.config import settings
 
 
 @functools.cache
@@ -31,7 +32,22 @@ def http_client_factory() -> HttpClient:
     return HttpClient()
 
 
-@functools.cache
-def checkpointer_factory() -> Checkpointer:
-    """Factory to return a singleton Checkpointer."""
-    return Checkpointer()
+async def checkpointer_factory():
+    """FastAPI Dependency yielding a Checkpointer (Stretch Goal 3)."""
+    url = settings.database_url
+    
+    if url.startswith("sqlite") or url.startswith("sqlite+aiosqlite"):
+        if "memory" in url:
+            yield MemorySaver()
+        else:
+            # LangGraph AsyncSqliteSaver expects standard sqlite URI
+            clean_url = url.replace("sqlite+aiosqlite:///", "")
+            async with AsyncSqliteSaver.from_conn_string(clean_url) as saver:
+                # We need to setup the checkpointer tables if they don't exist
+                await saver.setup()
+                yield saver
+    elif url.startswith("postgresql"):
+        # Placeholder for AsyncPostgresSaver
+        yield MemorySaver()
+    else:
+        yield MemorySaver()

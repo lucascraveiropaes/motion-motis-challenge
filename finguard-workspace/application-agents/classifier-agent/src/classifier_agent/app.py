@@ -75,30 +75,41 @@ import json
 
 from fastapi.responses import StreamingResponse
 
-from classifier_agent.resources.services import http_client_factory, llm_service_factory
+from classifier_agent.graph.types import GraphContext
+from classifier_agent.graph.workflow import get_compiled_graph
+from classifier_agent.resources.services import checkpointer_factory, http_client_factory, llm_service_factory
 
 
-async def event_stream_generator(request: StreamRequest, db: AsyncSession, _llm, _http):
+async def event_stream_generator(request: StreamRequest, db: AsyncSession, llm, http, checkpointer):
     """
-    Mock generator for Task 4 to simulate the LangGraph stream.
-    Yields Server-Sent Events with multi-message types (Stretch Goal 2).
+    Generator that uses LangGraph to stream Server-Sent Events.
+    Satisfies Stretch Goal 2 (Multi-Message Types) and Stretch Goal 3 (Checkpointer).
     """
-    # 1. Yield a status update
+    # 1. Yield initial status
     yield f"data: {json.dumps({'type': 'status', 'data': 'Connecting to classifier...'})}\n\n"
-    await asyncio.sleep(0.1)  # Simulate some latency
-
-    # 2. Run the actual classification (simulating AI processing)
-    category = await asyncio.to_thread(classify_transaction, request.description)
-
-    # 3. Yield the AI message
-    yield f"data: {json.dumps({'type': 'ai', 'data': {'category': category}, 'message': 'Classified'})}\n\n"
-
-    # 4. Optional: Save to db (not strictly required for the stream test, but good practice)
-    db_record = TransactionRecord(description=request.description, category=category)
-    db.add(db_record)
-    await db.commit()
-
-    # 5. Yield done message
+    
+    # 2. Setup the Context and compile the Graph
+    context = GraphContext(llm_service=llm, http_client=http, db_session=db)
+    graph = get_compiled_graph(context=context, checkpointer=checkpointer)
+    
+    # 3. Stream from the graph
+    # Checkpointer requires a thread_id in config
+    config = {"configurable": {"thread_id": request.thread_id}}
+    
+    async for event in graph.astream({"description": request.description}, config=config, stream_mode="updates"):
+        # The node returns {"category": <category>} in the state update.
+        if "classify" in event:
+            category = event["classify"]["category"]
+            
+            # Save to db dynamically
+            db_record = TransactionRecord(description=request.description, category=category)
+            db.add(db_record)
+            await db.commit()
+            
+            # Yield the AI message
+            yield f"data: {json.dumps({'type': 'ai', 'data': {'category': category}, 'message': 'Classified'})}\n\n"
+            
+    # 4. Yield done message
     yield f"data: {json.dumps({'type': 'done'})}\n\n"
 
 
@@ -108,8 +119,12 @@ async def stream_transactions_endpoint(
     db: AsyncSession = Depends(get_db_session_factory),
     llm=Depends(llm_service_factory),
     http=Depends(http_client_factory),
+    checkpointer=Depends(checkpointer_factory)
 ):
     """
-    Stream Server-Sent Events (SSE) representing the progress of a transaction classification.
+    Stream Server-Sent Events (SSE) representing the progress of a transaction classification using LangGraph.
     """
-    return StreamingResponse(event_stream_generator(request, db, llm, http), media_type="text/event-stream")
+    return StreamingResponse(
+        event_stream_generator(request, db, llm, http, checkpointer),
+        media_type="text/event-stream"
+    )

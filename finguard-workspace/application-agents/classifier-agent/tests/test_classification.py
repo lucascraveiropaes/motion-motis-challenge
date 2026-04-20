@@ -65,3 +65,15 @@ async def test_dependency_injection():
 
     # Verify app has dependency overrides setup
     assert hasattr(app, "dependency_overrides")
+
+
+@pytest.mark.asyncio
+async def test_graph_context():
+    """Verify that GraphContext is properly defined."""
+    from classifier_agent.graph.types import GraphContext
+    
+    # Should have the required service attributes
+    assert hasattr(GraphContext, '__dataclass_fields__')
+    fields = GraphContext.__dataclass_fields__
+    assert 'llm_service' in fields
+    assert 'http_client' in fields
