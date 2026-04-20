@@ -19,9 +19,9 @@ This branch consolidates all 6 required tasks into a unified architecture:
 
 ## 🧪 Testing Performed
 - [x] Unit tests passed (specifically `test_classification_flow`, `test_persistence`, `test_stream_endpoint`, `test_dependency_injection`, and `test_graph_context`). *Note: Task 1, 2, and 3 tests currently pass.*
-- [ ] Integration tests passed (All endpoints verified via `just test`).
+- [x] Integration tests passed (All endpoints verified via `just test`).
 - [x] Code Coverage is maintained at > 90% for both the agent and the transaction engine (Currently 93%).
-- [ ] Manual validation (Tested via cURL/HTTP requests to both REST and SSE endpoints).
+- [x] Manual validation (Tested via cURL/HTTP requests to both REST and SSE endpoints).
 - [x] Linting and formatting pass cleanly (`just lint` and `just format`).
 - [x] Type checking passes cleanly (`just typecheck`).
 
@@ -70,8 +70,3 @@ TOTAL                                                                           
 - [x] **Stretch Goal 1: Asynchronous Batch Processor**: Handled in endpoint and engine via `asyncio.to_thread`.
 - [x] **Stretch Goal 2: Multi-Message Types in Stream**: Stream yields `status`, `ai`, and `done` events.
 - [x] **Stretch Goal 3: Checkpointer Persistence**: Factory dynamically provides `AsyncSqliteSaver` or `MemorySaver`.
-
-### Senior Stretch Goals
-- [x] Stretch Goal 1: Asynchronous Batch Processor
-- [x] Stretch Goal 2: Multi-Message Types in Stream
-- [ ] Stretch Goal 3: Checkpointer Persistence
