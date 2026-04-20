@@ -13,7 +13,7 @@ class Settings(BaseSettings):
         settings_cls: Type[BaseSettings],
         init_settings: PydanticBaseSettingsSource,
         env_settings: PydanticBaseSettingsSource,
-        **kwargs
+        **_kwargs,
     ) -> Tuple[PydanticBaseSettingsSource, ...]:
         # Define the TOML configuration file
         toml_source = TomlConfigSettingsSource(settings_cls, toml_file=os.getenv("CONFIG_FILE", "config.toml"))

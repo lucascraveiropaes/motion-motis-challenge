@@ -26,11 +26,10 @@ This branch consolidates all 6 required tasks into a unified architecture:
 - [x] Type checking passes cleanly (`just typecheck`).
 
 ## 📸 Proof of Work (Optional but Recommended)
-**Task 1, 2 & 3 Execution Proof:**
+**Task 1, 2, 3 & 4 Execution Proof:**
 ```text
 $ uv run pytest application-agents/classifier-agent -vv --cov=classifier_agent --cov=transaction_engine
-application-agents/classifier-agent/tests/test_classification.py::test_classification_flow PASSED
-application-agents/classifier-agent/tests/test_classification.py::test_persistence PASSED
+application-agents/classifier-agent/tests/test_classification.py::test_stream_endpoint PASSED
 
 ================================ tests coverage ================================
 _______________ coverage: platform darwin, python 3.13.5-final-0 _______________
@@ -38,16 +37,17 @@ _______________ coverage: platform darwin, python 3.13.5-final-0 _______________
 Name                                                                             Stmts   Miss  Cover   Missing
 --------------------------------------------------------------------------------------------------------------
 application-agents/classifier-agent/src/classifier_agent/__init__.py                 0      0   100%
-application-agents/classifier-agent/src/classifier_agent/app.py                     31      1    97%   56
+application-agents/classifier-agent/src/classifier_agent/app.py                     33      2    94%   56
 application-agents/classifier-agent/src/classifier_agent/config.py                  10      0   100%
 application-agents/classifier-agent/src/classifier_agent/models.py                  11      0   100%
 application-agents/classifier-agent/src/classifier_agent/resources/__init__.py       0      0   100%
-application-agents/classifier-agent/src/classifier_agent/resources/database.py      13      4    69%   10-14
+application-agents/classifier-agent/src/classifier_agent/resources/database.py      15      4    73%   10-14
+application-agents/classifier-agent/src/classifier_agent/resources/services.py       4      0   100%
 packages/transaction-engine/src/transaction_engine/__init__.py                       2      0   100%
 packages/transaction-engine/src/transaction_engine/classifier.py                     9      0   100%
 --------------------------------------------------------------------------------------------------------------
-TOTAL                                                                               76      5    93%
-======================== 6 passed, 3 warnings in 0.04s =========================
+TOTAL                                                                              102      6    94%
+======================== 7 passed, 4 warnings in 0.18s =========================
 ```
 
 ---
@@ -57,7 +57,7 @@ TOTAL                                                                           
 - [x] **2. Code Coverage**: > 90% via `just test`.
 - [x] **3. Separation of Concerns**: Classification logic is strictly in `packages/`.
 - [x] **4. Configuration**: `.toml` pattern implemented.
-- [ ] **5. Stream Implementation**: `/stream/transactions` returns SSE.
+- [x] **5. Stream Implementation**: `/stream/transactions` returns SSE.
 - [x] **6. Dependency Injection (Database)**: DB session properly injected.
 - [ ] **7. Dependency Injection (Services)**: Factory functions implemented with `@cache`.
 - [x] **8. Dependency Overrides in Tests**: Handled via `app.dependency_overrides`.
@@ -65,5 +65,5 @@ TOTAL                                                                           
 
 ### Senior Stretch Goals
 - [x] Stretch Goal 1: Asynchronous Batch Processor
-- [ ] Stretch Goal 2: Multi-Message Types in Stream
+- [x] Stretch Goal 2: Multi-Message Types in Stream
 - [ ] Stretch Goal 3: Checkpointer Persistence

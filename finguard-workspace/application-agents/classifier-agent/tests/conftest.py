@@ -1,4 +1,3 @@
-import pytest
 import pytest_asyncio
 from classifier_agent.app import app
 from classifier_agent.models import Base
