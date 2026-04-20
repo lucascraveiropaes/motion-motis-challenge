@@ -2,32 +2,18 @@ from typing import List
 
 from fastapi import Depends, FastAPI
 from pydantic import BaseModel, Field
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session
 
 # Import from the workspace package
 from transaction_engine.classifier import classify_transaction
 
-from .models import Base, TransactionRecord
+from classifier_agent.models import TransactionRecord
+from classifier_agent.resources.database import get_db_session_factory, init_db
 
-# Database setup
-DATABASE_URL = "sqlite:///./classifier.db"  # Using SQLite for simplicity in this example
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Create tables if they don't exist
-Base.metadata.create_all(bind=engine)
+# Initialize database tables
+init_db()
 
 app = FastAPI()
-
-
-# Dependency to get DB session
-def get_db_session_factory():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 # Pydantic models for request/response
