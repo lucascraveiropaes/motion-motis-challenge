@@ -1,17 +1,35 @@
 set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
 
-# Sync all dependencies across the workspace
+# Install all workspace dependencies (including dev and prod groups)
 install:
     uv sync --all-packages
 
-# Format and Lint
+# Run linting and formatting (Ruff)
 lint:
     uv run ruff check .
+    uv run ruff format . --check
+
+# Run lint + auto-fix
+format:
+    uv run ruff check --fix .
     uv run ruff format .
 
-# Run all tests with coverage
+# Type checking with mypy
+typecheck:
+    uv run mypy .
+
+# Execute tests with coverage report
 test:
-    uv run pytest --cov
+    uv run pytest application-agents/classifier-agent -vv --cov=classifier_agent --cov=transaction_engine
+
+# Start the agent in development mode
+# Note: uvicorn is used directly because `fastapi dev` does not honour uv workspace editable .pth installs.
+dev:
+    PYTHONPATH="application-agents/classifier-agent/src:packages/transaction-engine/src" uv run uvicorn classifier_agent.app:app --reload --port 8080
+
+# Run with custom port
+dev-port port:
+    PYTHONPATH="application-agents/classifier-agent/src:packages/transaction-engine/src" uv run uvicorn classifier_agent.app:app --reload --port {{port}}
 
 # Helper to create a new shared package
 new-package name:

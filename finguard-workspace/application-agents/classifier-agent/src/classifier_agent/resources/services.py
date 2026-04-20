@@ -35,7 +35,7 @@ def http_client_factory() -> HttpClient:
 async def checkpointer_factory():
     """FastAPI Dependency yielding a Checkpointer (Stretch Goal 3)."""
     url = settings.database_url
-    
+
     if url.startswith("sqlite") or url.startswith("sqlite+aiosqlite"):
         if "memory" in url:
             yield MemorySaver()

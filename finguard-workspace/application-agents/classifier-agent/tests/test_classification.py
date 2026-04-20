@@ -71,9 +71,9 @@ async def test_dependency_injection():
 async def test_graph_context():
     """Verify that GraphContext is properly defined."""
     from classifier_agent.graph.types import GraphContext
-    
+
     # Should have the required service attributes
-    assert hasattr(GraphContext, '__dataclass_fields__')
+    assert hasattr(GraphContext, "__dataclass_fields__")
     fields = GraphContext.__dataclass_fields__
-    assert 'llm_service' in fields
-    assert 'http_client' in fields
+    assert "llm_service" in fields
+    assert "http_client" in fields

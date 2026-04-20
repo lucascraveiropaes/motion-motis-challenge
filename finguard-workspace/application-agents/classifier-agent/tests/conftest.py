@@ -2,7 +2,9 @@ import pytest_asyncio
 from classifier_agent.app import app
 from classifier_agent.models import Base
 from classifier_agent.resources.database import get_db_session_factory
+from classifier_agent.resources.services import checkpointer_factory
 from httpx import ASGITransport, AsyncClient
+from langgraph.checkpoint.memory import MemorySaver
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 # Create a test database in memory
@@ -22,8 +24,14 @@ async def override_get_db():
         await db.close()
 
 
-# Override the dependency in the app
+async def override_checkpointer():
+    """Override the checkpointer with an in-memory saver to avoid SQLite file handles in tests."""
+    yield MemorySaver()
+
+
+# Override the dependencies in the app
 app.dependency_overrides[get_db_session_factory] = override_get_db
+app.dependency_overrides[checkpointer_factory] = override_checkpointer
 
 
 @pytest_asyncio.fixture(scope="function", autouse=True)

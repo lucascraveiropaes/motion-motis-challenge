@@ -13,7 +13,7 @@ async def classify_node(state: GraphState, _context: GraphContext):
     """
     # 1. Perform classification (simulating an async AI call that uses context.llm_service if we had one)
     category = await asyncio.to_thread(classify_transaction, state["description"])
-    
+
     # 2. Return the state update
     return {"category": category}
 
@@ -28,9 +28,9 @@ def get_compiled_graph(context: GraphContext, checkpointer=None):
     # Wrap the node to inject the context directly
     async def classify_node_wrapper(state: GraphState):
         return await classify_node(state, context)
-    
+
     classify_node_wrapper.__name__ = "classify"  # Keep node name friendly
-    
+
     workflow.add_node("classify", classify_node_wrapper)
     workflow.add_edge(START, "classify")
     workflow.add_edge("classify", END)

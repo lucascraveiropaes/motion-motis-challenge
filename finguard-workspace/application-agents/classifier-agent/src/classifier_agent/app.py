@@ -1,13 +1,20 @@
+import asyncio
+import json
 from typing import List
 
 from fastapi import Depends, FastAPI
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # Import from the workspace package
 from transaction_engine.classifier import classify_transaction
 
+from classifier_agent.graph.types import GraphContext
+from classifier_agent.graph.workflow import get_compiled_graph
 from classifier_agent.models import TransactionRecord
 from classifier_agent.resources.database import get_db_session_factory, init_db
+from classifier_agent.resources.services import checkpointer_factory, http_client_factory, llm_service_factory
 
 # Initialize database tables
 init_db()
@@ -34,11 +41,6 @@ class StreamRequest(BaseModel):
     thread_id: str = Field(..., examples=["test-123"])
 
 
-import asyncio
-
-from sqlalchemy.ext.asyncio import AsyncSession
-
-
 @app.post("/transactions/classify", response_model=TransactionResponse)
 async def classify_transactions_endpoint(
     request: TransactionRequest, db: AsyncSession = Depends(get_db_session_factory)
@@ -63,22 +65,12 @@ async def classify_transactions_endpoint(
     db.add_all(db_records)
     await db.commit()
 
-    response_data = TransactionResponse(results=results)  # pragma: no cover
-    return response_data  # pragma: no cover
+    return TransactionResponse(results=results)  # pragma: no cover
 
 
 @app.get("/")
 async def read_root():
     return {"message": "Welcome to the FinGuard Classifier Agent!"}
-
-
-import json
-
-from fastapi.responses import StreamingResponse
-
-from classifier_agent.graph.types import GraphContext
-from classifier_agent.graph.workflow import get_compiled_graph
-from classifier_agent.resources.services import checkpointer_factory, http_client_factory, llm_service_factory
 
 
 async def event_stream_generator(request: StreamRequest, db: AsyncSession, llm, http, checkpointer):
@@ -88,28 +80,27 @@ async def event_stream_generator(request: StreamRequest, db: AsyncSession, llm, 
     """
     # 1. Yield initial status
     yield f"data: {json.dumps({'type': 'status', 'data': 'Connecting to classifier...'})}\n\n"
-    
+
     # 2. Setup the Context and compile the Graph
     context = GraphContext(llm_service=llm, http_client=http, db_session=db)
     graph = get_compiled_graph(context=context, checkpointer=checkpointer)
-    
-    # 3. Stream from the graph
-    # Checkpointer requires a thread_id in config
+
+    # 3. Stream from the graph; checkpointer requires a thread_id in config
     config = {"configurable": {"thread_id": request.thread_id}}
-    
+
     async for event in graph.astream({"description": request.description}, config=config, stream_mode="updates"):
         # The node returns {"category": <category>} in the state update.
         if "classify" in event:
             category = event["classify"]["category"]
-            
+
             # Save to db dynamically
             db_record = TransactionRecord(description=request.description, category=category)
             db.add(db_record)
             await db.commit()
-            
+
             # Yield the AI message
             yield f"data: {json.dumps({'type': 'ai', 'data': {'category': category}, 'message': 'Classified'})}\n\n"
-            
+
     # 4. Yield done message
     yield f"data: {json.dumps({'type': 'done'})}\n\n"
 
@@ -120,12 +111,12 @@ async def stream_transactions_endpoint(
     db: AsyncSession = Depends(get_db_session_factory),
     llm=Depends(llm_service_factory),
     http=Depends(http_client_factory),
-    checkpointer=Depends(checkpointer_factory)
+    checkpointer=Depends(checkpointer_factory),
 ):
     """
     Stream Server-Sent Events (SSE) representing the progress of a transaction classification using LangGraph.
     """
     return StreamingResponse(
         event_stream_generator(request, db, llm, http, checkpointer),
-        media_type="text/event-stream"
+        media_type="text/event-stream",
     )
