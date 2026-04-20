@@ -44,5 +44,5 @@ We will replace our mock streaming generator from Task 4 with a true, stateful L
 2. **Coverage**: Validate that the new `graph/` package brings/maintains coverage strictly >90%.
 
 ### Evaluation Criteria Checklist (per README.md)
-- [ ] **9. LangGraph Integration**: `GraphState` and `GraphContext` properly defined.
-- [ ] **Stretch Goal 3**: Checkpointer Persistence natively handles session state using `thread_id`.
+- [x] **9. LangGraph Integration**: `GraphState` and `GraphContext` properly defined.
+- [x] **Stretch Goal 3**: Checkpointer Persistence natively handles session state using `thread_id`.

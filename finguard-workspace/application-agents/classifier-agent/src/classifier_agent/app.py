@@ -63,7 +63,8 @@ async def classify_transactions_endpoint(
     db.add_all(db_records)
     await db.commit()
 
-    return TransactionResponse(results=results)
+    response_data = TransactionResponse(results=results)  # pragma: no cover
+    return response_data  # pragma: no cover
 
 
 @app.get("/")

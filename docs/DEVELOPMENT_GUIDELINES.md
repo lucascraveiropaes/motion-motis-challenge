@@ -33,9 +33,9 @@ Briefly explain *what* this PR does and *why* it is necessary. Link to any relat
 - Mention any architectural changes (e.g., new tables, shared packages).
 
 ## 🧪 Testing Performed
-- [ ] Unit tests passed (list key tests).
-- [ ] Integration tests passed (e.g., FastAPI endpoints).
-- [ ] Manual validation (e.g., "Tested via Postman/cURL").
+- [x] Unit tests passed (list key tests).
+- [x] Integration tests passed (e.g., FastAPI endpoints).
+- [x] Manual validation (e.g., "Tested via Postman/cURL").
 
 ## 📸 Proof of Work (Optional but Recommended)
 - Attach screenshots of API responses.

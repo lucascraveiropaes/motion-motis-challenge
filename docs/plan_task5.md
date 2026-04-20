@@ -53,5 +53,5 @@ __all__ = [
 2. **Coverage**: Validate that coverage remains strictly >90%.
 
 ### Evaluation Criteria Checklist (per README.md)
-- [ ] **7. Dependency Injection (Services)**: Factory functions implemented with `@cache`.
-- [ ] **Stretch Goal 3 Support**: `checkpointer_factory` implemented ahead of Task 6.
+- [x] **7. Dependency Injection (Services)**: Factory functions implemented with `@cache`.
+- [x] **Stretch Goal 3 Support**: `checkpointer_factory` implemented ahead of Task 6.

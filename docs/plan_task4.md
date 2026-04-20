@@ -44,5 +44,5 @@ We will also implement **Stretch Goal 2** by designing the stream to explicitly 
 2. **Coverage**: Ensure `test_stream_endpoint` brings the streaming endpoint code coverage up to project standards (>90%).
 
 ### Evaluation Criteria Checklist (per README.md)
-- [ ] **5. Stream Implementation**: `/stream/transactions` returns SSE correctly.
-- [ ] **Stretch Goal 2**: Multi-Message Types in Stream implemented (yielding `status`, `ai`, and `done`).
+- [x] **5. Stream Implementation**: `/stream/transactions` returns SSE correctly.
+- [x] **Stretch Goal 2**: Multi-Message Types in Stream implemented (yielding `status`, `ai`, and `done`).
