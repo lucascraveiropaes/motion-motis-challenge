@@ -2,11 +2,13 @@ from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel, Field
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
-from typing import List
 
 # Import from the workspace package
 from transaction_engine.classifier import classify_transaction
 from .models import Base, TransactionRecord
+from .controllers import agent_controller
+from .schemas.transactions import TransactionRequest, TransactionResponse, TransactionResponseItem
+from .resources.db_service import get_db
 
 # Database setup
 DATABASE_URL = "sqlite:///./classifier.db"  # Using SQLite for simplicity in this example
@@ -18,24 +20,7 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Dependency to get DB session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-# Pydantic models for request/response
-class TransactionRequest(BaseModel):
-    descriptions: List[str] = Field(..., example=["Starbucks Coffee", "Netflix Monthly"])
-
-class TransactionResponseItem(BaseModel):
-    description: str
-    category: str
-
-class TransactionResponse(BaseModel):
-    results: List[TransactionResponseItem]
+app.include_router(agent_controller.router)
 
 @app.post("/transactions/classify", response_model=TransactionResponse)
 async def classify_transactions_endpoint(
