@@ -6,9 +6,9 @@ from sqlalchemy.orm import sessionmaker, Session
 # Import from the workspace package
 from transaction_engine.classifier import classify_transaction
 from .models import Base, TransactionRecord
-from controllers import agent_controller
-from schemas.transactions import TransactionRequest, TransactionResponse, TransactionResponseItem
-from resources.db_service import get_db
+from .controllers import agent_controller
+from .schemas.transactions import TransactionRequest, TransactionResponse, TransactionResponseItem
+from .resources.db_service import get_db
 
 # Database setup
 DATABASE_URL = "sqlite:///./classifier.db"  # Using SQLite for simplicity in this example

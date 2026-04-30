@@ -3,9 +3,9 @@ from fastapi.responses import StreamingResponse
 import asyncio
 
 from transaction_engine.classifier import classify_transaction
-from classifier_agent.schemas import TransactionRequest, TransactionResponseItem
-from resources.db_service import get_db
-from models import TransactionRecord
+from ..schemas.transactions import TransactionRequest, TransactionResponseItem
+from ..resources.db_service import get_db
+from ..models import TransactionRecord
 
 
 
